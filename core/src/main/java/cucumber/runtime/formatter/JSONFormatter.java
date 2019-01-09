@@ -6,16 +6,7 @@ import cucumber.api.PickleStepTestStep;
 import cucumber.api.Result;
 import cucumber.api.TestCase;
 import cucumber.api.TestStep;
-import cucumber.api.event.EmbedEvent;
-import cucumber.api.event.EventHandler;
-import cucumber.api.event.EventListener;
-import cucumber.api.event.EventPublisher;
-import cucumber.api.event.TestCaseStarted;
-import cucumber.api.event.TestRunFinished;
-import cucumber.api.event.TestSourceRead;
-import cucumber.api.event.TestStepFinished;
-import cucumber.api.event.TestStepStarted;
-import cucumber.api.event.WriteEvent;
+import cucumber.api.event.*;
 import cucumber.api.formatter.NiceAppendable;
 import gherkin.ast.Background;
 import gherkin.ast.Feature;
@@ -30,6 +21,7 @@ import gherkin.pickles.PickleRow;
 import gherkin.pickles.PickleString;
 import gherkin.pickles.PickleTable;
 import gherkin.pickles.PickleTag;
+import сustomized.CustomJsonActions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -169,6 +161,9 @@ final class JSONFormatter implements EventListener {
     private void finishReport() {
         out.append(gson.toJson(featureMaps));
         out.close();
+
+        //Кастомные вызовы [***]
+       // new CustomJsonActions().deleteTempFile();
     }
 
     private Map<String, Object> createFeatureMap(TestCase testCase) {
@@ -256,6 +251,11 @@ final class JSONFormatter implements EventListener {
             Step step = (Step) astNode.node;
             stepMap.put("keyword", step.getKeyword());
         }
+
+        //Кастомные вызовы [***]
+        HashMap<String, Object> customData = new CustomJsonActions().getData(testStep.getStepText());
+
+        stepMap.put("screenshotPath", new CustomJsonActions().getValue(customData, "screenshotPath"));
 
         return stepMap;
     }

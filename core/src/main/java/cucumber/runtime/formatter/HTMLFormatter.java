@@ -16,6 +16,7 @@ import cucumber.api.event.TestStepStarted;
 import cucumber.api.event.WriteEvent;
 import cucumber.api.formatter.NiceAppendable;
 import cucumber.runtime.CucumberException;
+import cucumber.runtime.io.URLOutputStream;
 import gherkin.ast.Background;
 import gherkin.ast.DataTable;
 import gherkin.ast.DocString;
@@ -36,6 +37,7 @@ import gherkin.pickles.PickleRow;
 import gherkin.pickles.PickleString;
 import gherkin.pickles.PickleTable;
 import gherkin.pickles.PickleTag;
+import сustomized.CustomJsonActions;
 
 import java.io.Closeable;
 import java.io.File;
@@ -118,15 +120,17 @@ final class HTMLFormatter implements EventListener {
             finishReport();
         }
     };
-
-    @SuppressWarnings("WeakerAccess") // Used by PluginFactory
+	
+	@SuppressWarnings("WeakerAccess") // Used by PluginFactory
     public HTMLFormatter(URL htmlReportDir) {
         this(htmlReportDir, createJsOut(htmlReportDir));
     }
 
     HTMLFormatter(URL htmlReportDir, NiceAppendable jsOut) {
+
         this.htmlReportDir = htmlReportDir;
         this.jsOut = jsOut;
+
     }
 
     @Override
@@ -225,8 +229,9 @@ final class HTMLFormatter implements EventListener {
         Feature feature = testSources.getFeature(testCase.getUri());
         if (feature != null) {
             featureMap.put("keyword", feature.getKeyword());
-            featureMap.put("name", feature.getName());
+            featureMap.put("name", feature.getName()); //Имя которое — Функционал: Название
             featureMap.put("description", feature.getDescription() != null ? feature.getDescription() : "");
+
             if (!feature.getTags().isEmpty()) {
                 featureMap.put("tags", createTagList(feature.getTags()));
             }
@@ -280,6 +285,7 @@ final class HTMLFormatter implements EventListener {
             Map<String, Object> stepMap = new HashMap<String, Object>();
             stepMap.put("name", step.getText());
             stepMap.put("keyword", step.getKeyword());
+
             if (step.getArgument() != null) {
                 Node argument = step.getArgument();
                 if (argument instanceof DocString) {
@@ -339,7 +345,7 @@ final class HTMLFormatter implements EventListener {
 
     private Map<String, Object> createTestCase(TestCase testCase) {
         Map<String, Object> testCaseMap = new HashMap<String, Object>();
-        testCaseMap.put("name", testCase.getName());
+        testCaseMap.put("name", testCase.getName()); //Имя где сценарий
         TestSourcesModel.AstNode astNode = testSources.getAstNode(currentFeatureFile, testCase.getLine());
         if (astNode != null) {
             ScenarioDefinition scenarioDefinition = TestSourcesModel.getScenarioDefinition(astNode);
@@ -383,7 +389,17 @@ final class HTMLFormatter implements EventListener {
 
     private Map<String, Object> createTestStep(PickleStepTestStep testStep) {
         Map<String, Object> stepMap = new HashMap<String, Object>();
-        stepMap.put("name", testStep.getStepText());
+
+        //Кастомные вызовы [***]
+        HashMap<String, Object> customData = new CustomJsonActions().getData(testStep.getStepText());
+
+        String screenshotPath = (String) new CustomJsonActions().getValue(customData, "screenshotPath");
+
+        stepMap.put("name", testStep.getStepText() + " | Screenshot: file:\\" + screenshotPath);
+
+        stepMap.put("screenshotPath", screenshotPath);
+        //--
+
         if (!testStep.getStepArgument().isEmpty()) {
             Argument argument = testStep.getStepArgument().get(0);
             if (argument instanceof PickleString) {
@@ -397,6 +413,8 @@ final class HTMLFormatter implements EventListener {
             Step step = (Step) astNode.node;
             stepMap.put("keyword", step.getKeyword());
         }
+
+
 
         return stepMap;
     }

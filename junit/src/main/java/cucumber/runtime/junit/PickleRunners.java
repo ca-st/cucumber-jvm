@@ -92,10 +92,11 @@ class PickleRunners {
         public void run(final RunNotifier notifier) {
             // Possibly invoked by a thread other then the creating thread
             Runner runner = runnerSupplier.get();
-            JUnitReporter jUnitReporter = new JUnitReporter(runner.getBus(), jUnitOptions);
+            JUnitReporter jUnitReporter = new JUnitReporter(runner.getBus(), jUnitOptions); //Вызываем репорт junit
             jUnitReporter.startExecutionUnit(this, notifier);
-            runner.runPickle(pickleEvent);
+            runner.runPickle(pickleEvent); //Запуск огурца
             jUnitReporter.finishExecutionUnit();
+
         }
 
         @Override

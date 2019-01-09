@@ -9,6 +9,7 @@ import cucumber.api.event.TestStepFinished;
 import cucumber.api.event.TestStepStarted;
 import cucumber.runner.EventBus;
 import cucumber.runtime.junit.PickleRunners.PickleRunner;
+import сustomized.PassedActions;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
@@ -70,6 +71,7 @@ public class JUnitReporter {
     public JUnitReporter(EventBus bus, JUnitOptions junitOption) {
         this.junitOptions = junitOption;
         this.bus = bus;
+
         bus.registerHandlerFor(TestCaseStarted.class, testCaseStartedHandler);
         bus.registerHandlerFor(TestStepStarted.class, testStepStartedHandler);
         bus.registerHandlerFor(TestStepFinished.class, testStepFinishedHandler);
@@ -77,6 +79,7 @@ public class JUnitReporter {
     }
 
     public void finishExecutionUnit() {
+
         bus.removeHandlerFor(TestCaseStarted.class, testCaseStartedHandler);
         bus.removeHandlerFor(TestStepStarted.class, testStepStartedHandler);
         bus.removeHandlerFor(TestStepFinished.class, testStepFinishedHandler);
@@ -110,6 +113,7 @@ public class JUnitReporter {
         Throwable error = result.getError();
         switch (result.getStatus()) {
         case PASSED:
+            new PassedActions().startCustomAction(testStep, result); //Запустить кастомные действия
             // do nothing
             break;
         case SKIPPED:
