@@ -283,6 +283,7 @@
 
     <build>
         <pluginManagement>
+		
             <plugins>
                 <!-- Standard plugins - alphabetically -->
                 <plugin>
