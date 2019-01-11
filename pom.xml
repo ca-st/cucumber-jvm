@@ -285,6 +285,7 @@
         <pluginManagement>
 		
             <plugins>
+			
                 <!-- Standard plugins - alphabetically -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
