@@ -58,6 +58,7 @@
         <groovy.version>2.5.5</groovy.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
     </properties>
+	
     <scm>
         <connection>scm:git:git://github.com/cucumber/cucumber-jvm.git</connection>
         <developerConnection>scm:git:git@github.com:cucumber/cucumber-jvm.git</developerConnection>
